@@ -17,7 +17,7 @@ class MovieDetailsActivity : AppCompatActivity() {
         binding.setLifecycleOwner(this);
 
         val currMovie: Movie = intent.getParcelableExtra<Movie>("movie");
-        title = "Top Rated"
+        title = currMovie.title
         binding.movie = currMovie
 
     }
