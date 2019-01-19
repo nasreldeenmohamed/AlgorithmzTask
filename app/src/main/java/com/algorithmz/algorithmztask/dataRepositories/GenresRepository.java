@@ -1,6 +1,8 @@
 package com.algorithmz.algorithmztask.dataRepositories;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.support.annotation.Nullable;
 
@@ -11,18 +13,27 @@ import java.util.HashMap;
 import java.util.List;
 
 public class GenresRepository {
-    private HashMap<Integer, String> GenresMap;
+    RetrofitRepository retrofitRepository;
 
-    public GenresRepository(String lang) {
+    private HashMap<Integer, String> GenresMap;
+    private LiveData<HashMap<Integer, String>> hashMapLiveData = new MutableLiveData<>();
+
+    @SuppressLint("UseSparseArrays")
+    public GenresRepository() {
         GenresMap = new HashMap<>();
-        RetrofitRepository retrofitRepository = RetrofitRepository.getInstance();
-        LiveData<List<Genre>> liveData = retrofitRepository.getGenresList(lang);
-        liveData.observeForever(new Observer<List<Genre>>() {
+        retrofitRepository = RetrofitRepository.getInstance();
+    }
+
+    public LiveData<HashMap<Integer, String>> getGenresHashMapLiveData(String lang) {
+        LiveData<List<Genre>> genreLiveData = retrofitRepository.getGenresList(lang);
+        genreLiveData.observeForever(new Observer<List<Genre>>() {
             @Override
             public void onChanged(@Nullable List<Genre> genres) {
                 mapGenres(genres);
+                ((MutableLiveData<HashMap<Integer, String>>) hashMapLiveData).setValue(GenresMap);
             }
         });
+        return hashMapLiveData;
     }
 
     private void mapGenres(List<Genre> genres) {

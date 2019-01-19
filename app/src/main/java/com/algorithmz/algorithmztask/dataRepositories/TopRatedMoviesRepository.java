@@ -11,6 +11,8 @@ import java.util.List;
 
 public class TopRatedMoviesRepository {
     RetrofitRepository retrofitRepository;
+    List<Movie> movieList;
+    LiveData<List<Movie>> listLiveData;
 
     public TopRatedMoviesRepository(Application application) {
         retrofitRepository = RetrofitRepository.getInstance();
@@ -18,6 +20,12 @@ public class TopRatedMoviesRepository {
 
     public LiveData<List<Movie>> getTopRatedMoviesList(String lang, String region, int pageNum) {
         TopRatedRequest topRatedRequest = new TopRatedRequest(lang, pageNum, region);
-        return retrofitRepository.getTopRatedMoviesList(topRatedRequest);
+        listLiveData = retrofitRepository.getTopRatedMoviesList(topRatedRequest);
+        movieList = listLiveData.getValue();
+        return listLiveData;
+    }
+
+    public List<Movie> getMovieList() {
+        return movieList;
     }
 }

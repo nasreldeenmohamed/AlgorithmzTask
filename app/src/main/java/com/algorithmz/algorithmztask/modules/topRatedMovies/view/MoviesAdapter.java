@@ -21,8 +21,6 @@ public class MoviesAdapter extends ListAdapter<Movie, MoviesAdapter.MovieHolder>
 
     LayoutInflater layoutInflater;
 
-    Context context;
-
     public MoviesAdapter() {
         super(DIFF_CALLBACK);
     }
