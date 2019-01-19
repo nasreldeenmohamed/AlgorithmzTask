@@ -4,8 +4,11 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
+import com.algorithmz.algorithmztask.models.Genre;
 import com.algorithmz.algorithmztask.models.Movie;
 import com.algorithmz.algorithmztask.utils.Constants;
+import com.algorithmz.algorithmztask.webService.models.GenreResponse;
+import com.algorithmz.algorithmztask.webService.models.TopRatedRequest;
 import com.algorithmz.algorithmztask.webService.models.TopRatedResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -46,10 +49,11 @@ public class RetrofitRepository {
         return retrofitRepository;
     }
 
-    public LiveData<List<Movie>> getTopRatedMoviesList() {
+    public LiveData<List<Movie>> getTopRatedMoviesList(TopRatedRequest topRatedRequest) {
         final LiveData<List<Movie>> postsList = new MutableLiveData<>();
 
-        apiRequests.getTopRatedMovies().enqueue(new Callback<TopRatedResponse>() {
+        apiRequests.getTopRatedMovies(Constants.API_KEY, topRatedRequest.getLanguage(), topRatedRequest.getPageNumber(),
+                topRatedRequest.getRegion()).enqueue(new Callback<TopRatedResponse>() {
             @Override
             public void onResponse(@NonNull Call<TopRatedResponse> call, @NonNull Response<TopRatedResponse> response) {
                 if (response.isSuccessful()) {
@@ -65,5 +69,26 @@ public class RetrofitRepository {
         });
 
         return postsList;
+    }
+
+    public LiveData<List<Genre>> getGenresList(String lang) {
+        final LiveData<List<Genre>> genresList = new MutableLiveData<>();
+
+        apiRequests.getGenresList(Constants.API_KEY, lang).enqueue(new Callback<GenreResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<GenreResponse> call, @NonNull Response<GenreResponse> response) {
+                if (response.isSuccessful()) {
+                    ((MutableLiveData<List<Genre>>) genresList).setValue(response.body().getGenresList());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GenreResponse> call, Throwable t) {
+                TopRatedResponse topRatedResponse = new TopRatedResponse();
+                topRatedResponse.setStatusMessage(t.getMessage());
+            }
+        });
+
+        return genresList;
     }
 }

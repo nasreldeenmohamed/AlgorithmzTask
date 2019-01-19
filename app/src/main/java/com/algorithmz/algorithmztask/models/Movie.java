@@ -1,12 +1,22 @@
 package com.algorithmz.algorithmztask.models;
 
+import android.databinding.BaseObservable;
+import android.databinding.Bindable;
+import android.databinding.BindingAdapter;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.widget.ImageView;
 
+import com.algorithmz.algorithmztask.R;
+import com.algorithmz.algorithmztask.utils.Constants;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.squareup.picasso.Picasso;
 
-public class Movie {
+public class Movie extends BaseObservable implements Parcelable {
 
+    @Bindable
     @SerializedName("poster_path")
     @Expose
     private String PosterPath;
@@ -27,6 +37,7 @@ public class Movie {
     @Expose
     private String ReleaseDate;
 
+    @Bindable
     @SerializedName("original_title")
     @Expose
     private String OriginalTitle;
@@ -35,6 +46,7 @@ public class Movie {
     @Expose
     private String OriginalLanguage;
 
+    @Bindable
     @SerializedName("title")
     @Expose
     private String Title;
@@ -47,6 +59,8 @@ public class Movie {
     @SerializedName("genre_ids")
     @Expose
     private int[] GeneratedIDs;
+
+    private String Genres;
 
     @SerializedName("id")
     @Expose
@@ -66,6 +80,46 @@ public class Movie {
 
     public Movie() {
     }
+
+
+    protected Movie(Parcel in) {
+        PosterPath = in.readString();
+        isAdult = in.readByte() != 0;
+        isVideo = in.readByte() != 0;
+        Overview = in.readString();
+        ReleaseDate = in.readString();
+        OriginalTitle = in.readString();
+        OriginalLanguage = in.readString();
+        Title = in.readString();
+        BackdropPath = in.readString();
+        GeneratedIDs = in.createIntArray();
+        Genres = in.readString();
+        MovieID = in.readInt();
+        Popularity = in.readDouble();
+        VoteAverage = in.readDouble();
+        VoteCount = in.readInt();
+    }
+
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
+
+    @BindingAdapter({"bind:poster_path"})
+    public static void loadImage(ImageView view, String imageUrl) {
+        Picasso.with(view.getContext())
+                .load(Constants.BASE_IMAGES_URL + imageUrl)
+                .placeholder(R.drawable.ic_launcher_foreground)
+                .into(view);
+    }
+
 
     public String getPosterPath() {
         return PosterPath;
@@ -148,6 +202,14 @@ public class Movie {
         GeneratedIDs = generatedIDs;
     }
 
+    public String getGenres() {
+        return Genres;
+    }
+
+    public void setGenres(String genres) {
+        Genres = genres;
+    }
+
     public int getMovieID() {
         return MovieID;
     }
@@ -178,5 +240,29 @@ public class Movie {
 
     public void setVoteCount(int voteCount) {
         VoteCount = voteCount;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(PosterPath);
+        parcel.writeByte((byte) (isAdult ? 1 : 0));
+        parcel.writeByte((byte) (isVideo ? 1 : 0));
+        parcel.writeString(Overview);
+        parcel.writeString(ReleaseDate);
+        parcel.writeString(OriginalTitle);
+        parcel.writeString(OriginalLanguage);
+        parcel.writeString(Title);
+        parcel.writeString(BackdropPath);
+        parcel.writeIntArray(GeneratedIDs);
+        parcel.writeString(Genres);
+        parcel.writeInt(MovieID);
+        parcel.writeDouble(Popularity);
+        parcel.writeDouble(VoteAverage);
+        parcel.writeInt(VoteCount);
     }
 }
