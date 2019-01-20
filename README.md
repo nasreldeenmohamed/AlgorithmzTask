@@ -9,7 +9,7 @@ the project contains 2 modules:
 - 2 data repositories class (genres repo & top rated movies)
 - retrofit repository singleton class for calling APIs and get data from server
 
-how it works
+How it works
 ---------------
 - view model calls repos to get data, 2 lists of data which are top rated movies list and genres list, then each movie's list will be mapped throught their IDs
 - the genres repository have to deliver the view model with a HashMap not List, so I converted the format of the data in the GenresRepository
