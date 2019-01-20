@@ -11,11 +11,11 @@ the project contains 2 modules:
 
 how it works
 ---------------
-1- view model calls repos to get data, 2 lists of data which are top rated movies list and genres list, then each movie's list will be mapped throught their IDs
-2- the genres repository have to deliver the view model with a HashMap not List, so I converted the format of the data in the GenresRepository
-3- the MainActivity only shows the list of movies that is returned from the viewModel
-4- on item clicked, the "movie" object is passed to the next activity as extra, the Movie class is implementing Parcelable class
-5- the MovieDetailsActivity shows the movie info only
+- view model calls repos to get data, 2 lists of data which are top rated movies list and genres list, then each movie's list will be mapped throught their IDs
+- the genres repository have to deliver the view model with a HashMap not List, so I converted the format of the data in the GenresRepository
+- the MainActivity only shows the list of movies that is returned from the viewModel
+- on item clicked, the "movie" object is passed to the next activity as extra, the Movie class is implementing Parcelable class
+- the MovieDetailsActivity shows the movie info only
 
 Technologies Used:
 ---------------------
