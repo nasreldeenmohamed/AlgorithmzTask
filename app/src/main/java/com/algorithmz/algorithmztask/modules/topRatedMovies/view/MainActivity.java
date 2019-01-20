@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.view.View;
 
 import com.algorithmz.algorithmztask.R;
 import com.algorithmz.algorithmztask.databinding.ActivityMainBinding;
@@ -15,7 +16,6 @@ import com.algorithmz.algorithmztask.models.Movie;
 import com.algorithmz.algorithmztask.modules.MovieDetailsActivity;
 import com.algorithmz.algorithmztask.modules.topRatedMovies.MoviesViewModel;
 
-import java.util.HashMap;
 import java.util.List;
 
 class MainActivity extends AppCompatActivity {
@@ -39,19 +39,11 @@ class MainActivity extends AppCompatActivity {
 
         mainViewModel = ViewModelProviders.of(this).get(MoviesViewModel.class);
 
-
-        mainViewModel.getGenresListLiveData().observe(this, new Observer<HashMap<Integer, String>>() {
+        mainViewModel.getTopRatedMoviesList().observe(MainActivity.this, new Observer<List<Movie>>() {
             @Override
-            public void onChanged(@Nullable HashMap<Integer, String> integerStringHashMap) {
-
-                mainViewModel.getTopRatedMoviesList().observe(MainActivity.this, new Observer<List<Movie>>() {
-                    @Override
-                    public void onChanged(@Nullable List<Movie> movies) {
-                        List<Movie> MappedMovies = mainViewModel.mapMoviesGenres(movies);
-                        moviesAdapter.submitList(MappedMovies);
-                    }
-                });
-
+            public void onChanged(@Nullable List<Movie> movies) {
+                binding.progressBar.setVisibility(View.GONE);
+                moviesAdapter.submitList(movies);
             }
         });
 

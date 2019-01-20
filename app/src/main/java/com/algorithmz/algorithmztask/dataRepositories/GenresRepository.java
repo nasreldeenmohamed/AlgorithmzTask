@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class GenresRepository {
-    RetrofitRepository retrofitRepository;
+    private RetrofitRepository retrofitRepository;
 
     private HashMap<Integer, String> GenresMap;
     private LiveData<HashMap<Integer, String>> hashMapLiveData = new MutableLiveData<>();

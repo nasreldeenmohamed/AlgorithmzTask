@@ -4,22 +4,26 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Observer;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.algorithmz.algorithmztask.dataRepositories.GenresRepository;
 import com.algorithmz.algorithmztask.dataRepositories.TopRatedMoviesRepository;
-import com.algorithmz.algorithmztask.models.Genre;
 import com.algorithmz.algorithmztask.models.Movie;
 
 import java.util.HashMap;
 import java.util.List;
 
 public class MoviesViewModel extends AndroidViewModel {
-    private LiveData<List<Movie>> topRatedListLiveData = new MutableLiveData<>();
-    private LiveData<List<Genre>> GenresListLiveData = new MutableLiveData<>();
+    private LiveData<List<Movie>> topRatedListLiveData;
+    private LiveData<HashMap<Integer, String>> GenresListLiveData;
 
     private GenresRepository genresRepository;
     private TopRatedMoviesRepository topRatedMoviesRepository;
+
+    private HashMap<Integer, String> genresList;
 
     // these data supposed to be in user's settings for the app, for now I'll make it constants
     private int CurrentPage = 1;
@@ -29,35 +33,47 @@ public class MoviesViewModel extends AndroidViewModel {
     public MoviesViewModel(@NonNull Application application) {
         super(application);
         genresRepository = new GenresRepository();
-
         topRatedMoviesRepository = new TopRatedMoviesRepository(application);
+
+        GenresListLiveData = genresRepository.getGenresHashMapLiveData(CurrentLanguage);
+        GenresListLiveData.observeForever(new Observer<HashMap<Integer, String>>() {
+            @Override
+            public void onChanged(@Nullable HashMap<Integer, String> integerStringHashMap) {
+                Log.e("viewModel", "genres map ready");
+                genresList = integerStringHashMap;
+                GenresListLiveData.removeObserver(this);
+            }
+        });
+
+        topRatedListLiveData = topRatedMoviesRepository.getTopRatedMoviesList(CurrentLanguage, CurrentRegion, CurrentPage);
+        topRatedListLiveData.observeForever(new Observer<List<Movie>>() {
+            @Override
+            public void onChanged(@Nullable List<Movie> movies) {
+                Log.e("viewModel", "movies list ready");
+                if (genresList != null)
+                    mapMoviesGenres(movies, genresList);
+                topRatedListLiveData.removeObserver(this);
+            }
+        });
     }
 
     public LiveData<List<Movie>> getTopRatedMoviesList() {
-        return topRatedMoviesRepository.getTopRatedMoviesList(CurrentLanguage, CurrentRegion, CurrentPage);
+        return topRatedListLiveData;
     }
 
-    public LiveData<HashMap<Integer, String>> getGenresListLiveData() {
-        return genresRepository.getGenresHashMapLiveData(CurrentLanguage);
-    }
-
-    public List<Movie> mapMoviesGenres(List<Movie> movieList) {
-//        List<Movie> movieList = topRatedMoviesRepository.getMovieList();
-        HashMap<Integer, String> GenresHashMap = genresRepository.getGenresMap();
-
+    private void mapMoviesGenres(List<Movie> movieList, HashMap<Integer, String> GenresHashMap) {
         if (movieList != null && GenresHashMap != null) {
             String genreTemp = "";
-            for (Movie movie : movieList) {
-                int[] genresString = movie.getGeneratedIDs();
+            for (int i = 0; i < movieList.size(); i++) {
+                int[] genresString = movieList.get(i).getGeneratedIDs();
                 for (int j = 0; j < genresString.length; j++) {
                     genreTemp += GenresHashMap.get(genresString[j]) + ", ";
                 }
                 genreTemp = genreTemp.substring(0, (genreTemp.length() - 2));
-                movie.setGenres(genreTemp);
+                movieList.get(i).setGenres(genreTemp);
                 genreTemp = "";
             }
             ((MutableLiveData<List<Movie>>) topRatedListLiveData).setValue(movieList);
         }
-        return movieList;
     }
 }

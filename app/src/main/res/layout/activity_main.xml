@@ -8,11 +8,17 @@
         android:padding="8dp"
         tools:context=".modules.topRatedMovies.view.MainActivity">
 
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:listitem="@layout/item_movie" />
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
     </android.support.design.widget.CoordinatorLayout>
 </layout>
