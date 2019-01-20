@@ -20,5 +20,9 @@ class MovieDetailsActivity : AppCompatActivity() {
         title = currMovie.title
         binding.movie = currMovie
 
+        binding.textVotes.setText("Votes: " + currMovie.voteAverage + " (" + currMovie.voteCount + ")")
+        binding.textLanguage.setText("Original Language: " + currMovie.originalLanguage)
+
+
     }
 }
